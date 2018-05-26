@@ -1,0 +1,86 @@
+#include<stdio.h>
+#include<stdlib.h>
+
+#define SUCCESS 1
+#define FAIL 0
+#define FREE 1
+#define NOT_FREE 0
+#define HOLE 0
+#define N 10
+
+int try(int);
+
+int row[N],col[N],pos[2*N-1],neg[2*N-1];
+int total_sol=0;
+int hole_x, hole_y;
+
+int main(){
+  int i,j;
+  int hole_x, hole_y;
+
+  for (i=0;i<N;i++){
+    row[i]=-1;
+    col[i]=FREE;
+  }
+  for (i=0;i<2*N-1;i++){
+    pos[i]=FREE;
+    neg[i]=FREE;
+  }
+
+  scanf("%d %d", &hole_x, &hole_y);
+
+  if (try(0)==SUCCESS){
+/*
+    for (i=0;i<N;i++){
+      for (j=0;j<N;j++){
+      	if (row[i]==j) printf("Q ");
+      	else printf(". ");
+      }
+      printf("\n");
+    }
+*/
+  }
+  else printf("total solution is %d \n", total_sol);
+
+
+  return 0;
+}
+
+int try(int i){
+  int j,k,l;
+  for (j=0;j<N;j++){
+
+    if(i == hole_y && j == hole_x){
+      continue;
+    } else {
+      if (col[j]==FREE && pos[i+j]==FREE && neg[i-j+N-1]==FREE ){
+	row[i]=j;
+	col[j]=NOT_FREE;
+	pos[i+j]=NOT_FREE;
+	neg[i-j+N-1]=NOT_FREE;
+	  
+	  
+	if (i>=N-1) {
+          ++total_sol;
+	  row[i]=-1;
+	  col[j]=FREE;
+	  pos[i+j]=FREE;
+	  neg[i-j+N-1]=FREE;
+	  try(i-1);
+		
+	  //return SUCCESS;
+        }
+        else {
+	  if (try(i+1)==SUCCESS) return SUCCESS;
+	  else {
+	    row[i]=-1;
+	    col[j]=FREE;
+	    pos[i+j]=FREE;
+	    neg[i-j+N-1]=FREE;
+	  }
+        }
+      }
+    }
+  }
+  return FAIL;
+}

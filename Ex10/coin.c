@@ -1,0 +1,58 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+#define MAX 10
+#define INFTY 999999
+
+
+
+int main(){
+  int i,n, index;
+  int payment, cntCoin;
+
+  int *dp;
+  int b[4] = {1, 5, 10, 25};
+  int use_b[4] = {0, 0, 0, 0};
+
+  printf("Input how many cents should you pay?\n->");
+  scanf("%d", &payment);
+
+  dp = (int *)malloc(sizeof(int)* payment);
+
+  dp[0] = 0;
+  for(i=1, n=0; i<=payment; i++){
+    dp[i] = INFTY;
+    if(i == b[n]){
+      dp[i] = 1;
+      n++;
+    }
+  }
+
+  for(i=1; i<=payment; i++){
+    for(n=0; n<4; n++){
+      index = i - b[n];
+      if(index <= 0) continue;
+      if(dp[i] > dp[index] + dp[b[n]]){
+	      dp[i] = dp[index] + dp[b[n]];
+      }
+    }
+  }
+  
+ 
+  i = payment;
+  for(n=3; n>=0; n--){
+    index = i - b[n];
+    if(index < 0) continue;
+    if(dp[i] == dp[index]) continue;
+    use_b[n]++;
+    i = index;
+    n++;
+  }
+
+  for(n=0; n<4; n++){
+    printf("%dcent=%d ",b[n], use_b[n]);
+  }
+  printf("\n");
+
+  return 0;
+}
