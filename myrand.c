@@ -10,7 +10,7 @@
 
 /* Complete Here !! (Variables Declaration) */
 static int next=0;
-static int x = 1;
+static int x;
 static int B[55];
 
 int next_rnd2(void);
@@ -55,6 +55,6 @@ void my_srand(void){
   stamp = (int)time(NULL);
   t = localtime(&stamp);
 
-  x2 = t->tm_sec; // seed
+  x = t->tm_sec; // seed
   init_rnd();
 }

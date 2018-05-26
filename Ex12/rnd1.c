@@ -6,7 +6,7 @@
 
 int next_rnd1(void);
 
-static long x = 53402397;
+static int x = 1;
 int data[100];
 
 int main(){
@@ -23,7 +23,7 @@ int main(){
 
 int next_rnd1(void){
   x = x*65539+125654;
-  if((int)x<0){
+  if(x<0){
     x += M;
     x += 1;
   }
