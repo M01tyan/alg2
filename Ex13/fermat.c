@@ -82,7 +82,7 @@ int Fermat_test(int P){
   
   for(i=n-2;i>=0;i--){
     y = x*x%P;
-    if( y == 1 && x != 1 && x != P-1 ) return TRUE;
+    if( y == 1 && x != 1 && x != P-1 ) return FALSE;
     if( ((P-1) & (1<<i)) != 0 ){ // b[i]==1
       y = y*A%P;
     }
