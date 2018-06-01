@@ -1,0 +1,44 @@
+//配列のスカラー倍（スカラー変数とベクトル変数の演算）
+#include <stdio.h>
+#include <math.h>
+#include <immintrin.h>
+
+#define N 24
+
+int main(){
+  int i;
+  int num_chunk, vec_size = sizeof(__m256)/sizeof(float);
+
+  float *a,*result;
+  float constant = 3.0;
+  __m256 vec_a,vec_b,vec_c;
+
+
+  a = (float *)_mm_malloc(sizeof(float)*N,32);
+  result = (float *)_mm_malloc(sizeof(float)*N,32);
+  for(i=0;i<N;i++){
+    a[i] = (float)i*1.0;
+  }
+
+  printf("vector A:\n");
+  for(i=0;i<N;i++) printf("%f ",a[i]);
+  printf("\n");
+
+  num_chunk = N/vec_size;
+  for(i=0;i<num_chunk;i++){
+    vec_a = _mm256_load_ps(a+vec_size*i);
+    vec_b = _mm256_broadcast_ss(&constant);    //定数constantの値で配列b全体を埋める
+
+    vec_c = _mm256_mul_ps(vec_a, vec_b); // vec_a[]*vec_b[] のベクトル演算をする。だが b は全部同じ値なので、実質のスカラー倍
+    _mm256_store_ps(result+vec_size*i,vec_c); // float型のresult[]配列に結果を返す（ストアする）
+  }
+
+  printf("vector a[] mutiplied by %f:\n",constant);
+  for(i=0;i<N;i++) printf("%f ",result[i]);
+  printf("\n");
+
+  _mm_free(a);
+  _mm_free(result);
+
+  return 0;
+}
