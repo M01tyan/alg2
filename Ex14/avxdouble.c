@@ -53,7 +53,7 @@ double calc_original(double c,double *v1, double *v2, int n){    // 与えられ
   int i;
   double sum = 0;
 
-#pragma omp parallel for reduction(+:sum) //あとで、ここに#pragma ...  を１行入れてOpenMP並列化
+  //#pragma omp parallel for reduction(+:sum) //あとで、ここに#pragma ...  を１行入れてOpenMP並列化
   for(i = 0; i < n; i++){
     sum += v1[i] *  (sqrt(c)*v2[i]);
   }
@@ -64,26 +64,26 @@ double calc_original(double c,double *v1, double *v2, int n){    // 与えられ
 
 double calc_avx(double c,double *v1, double *v2, int n){ // AVXによるベクトル演算(SIMD)をここで作る
   int i;
-  int num_chunk, vec_size = sizeof(__m256d)/sizeof(double);
+  int num_chunk, vec_size = sizeof(__m256)/sizeof(double);
   double *t,sum;
   __m256d u = {0}, v_c; // u：各ベクトル演算で計算した部分和を足していく　v_c：スカラー変数 c を保持するベクトル
 
   t = (double *)_mm_malloc(sizeof(double)*n,64);
 
-  v_c =  _mm256d_broadcast_sd(&c);  //スカラー変数 c を ベクトル v_c へ放送する
+  v_c =  _mm256_broadcast_sd(&c);  //スカラー変数 c を ベクトル v_c へ放送する
 
 
   num_chunk = n/vec_size;         // １回のベクトル演算でまとめて扱える変数はvec_sizeだから、全部でnum_chunk回のベクトル演算をする
   for(i = 0; i < num_chunk; i++){
-    __m256d vec_v1 = _mm256d_load_pd(v1+vec_size*i);  // 通常のfloat型配列v1をベクトル vec_v1へロード
-    __m256d vec_v2 = _mm256d_load_pd(v2+vec_size*i);  // 通常のfloat型配列v2をベクトル vec_v2へロード
+    __m256d vec_v1 = _mm256_load_pd(v1+vec_size*i);  // 通常のfloat型配列v1をベクトル vec_v1へロード
+    __m256d vec_v2 = _mm256_load_pd(v2+vec_size*i);  // 通常のfloat型配列v2をベクトル vec_v2へロード
 
-    vec_v1 = _mm256d_mul_pd(vec_v1, _mm256d_mul_pd(_mm256d_sqrt_pd(v_c), vec_v2));         //計算式部分。イントリンシック関数を入れ子にすれば１行で書けるが、
+    vec_v1 = _mm256_mul_pd(vec_v1, _mm256_mul_pd(_mm256_sqrt_pd(v_c), vec_v2));         //計算式部分。イントリンシック関数を入れ子にすれば１行で書けるが、
       //分けて書いてもよい。必要に応じて、__m256型のベクトル変数を新たに宣言せよ。
 
-    u = _mm256d_add_pd(u, vec_v1);// vec_v1の部分的な結果をuに加える
+    u = _mm256_add_pd(u, vec_v1);// vec_v1の部分的な結果をuに加える
   }
-  _mm256d_store_pd(t, u);                    // ベクトル u を 通常のfloat型配列 t へストア
+  _mm256_store_pd(t, u);                    // ベクトル u を 通常のfloat型配列 t へストア
 
 
 

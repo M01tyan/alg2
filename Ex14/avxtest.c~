@@ -19,7 +19,7 @@ int main(int argc,char **argv){
 
   if(argc==2) num_data = atoi(argv[1]); //実行時の引数でデータ数を入力
   else num_data = 8; //引数が正しくなければ、とりあえずデータ数を８としておく
-
+  omp_set_num_threads(24);
   my_srand();
 
   a = (float *)_mm_malloc(sizeof(float)*num_data, 32);
